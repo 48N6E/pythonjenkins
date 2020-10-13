@@ -55,7 +55,7 @@ def buildJob(jobname,server,params):
 
 
 if __name__ == '__main__':
-    server = jenkins.Jenkins('http://192.168.30.36:8080', username="ops.admin", password="Yunlsp123+456+")
+    server = jenkins.Jenkins('http://192.168.30.36:8080', username="ops.admin", password="123+456+")
     params = {'one': 'oriin/master', 'two': '192.168.30.36'}
     showJobs(server)
     showJobDetail('test')

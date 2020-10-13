@@ -99,7 +99,7 @@ def copyView(viewname,newname):
         logger.error("%s 已经存在" % newname)
 
 if __name__ == '__main__':
-    server = jenkins.Jenkins('http://192.168.30.36:8080', username="ops.admin", password="Yunlsp123+456+")
+    server = jenkins.Jenkins('http://192.168.30.36:8080', username="ops.admin", password="123+456+")
     viewsCount(server)
     showView("all")
     #readViewConfig(server,"test")
