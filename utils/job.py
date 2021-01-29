@@ -95,6 +95,20 @@ def showJob(assignednode):
             assignednode_jobs.append(i)
     return assignednode_jobs
 
+#显示所有项目,按照配置内容
+def showcontextJob(context):
+    all_jobs_li = server.get_all_jobs()
+    all_jobs = []
+    assignednode_jobs = []
+    for job in all_jobs_li:
+        all_jobs.append(job['name'])
+    context= '%s' % context
+    for i in all_jobs:
+        content = server.get_job_config(i)
+        if context in  content:
+            assignednode_jobs.append(i)
+    print(assignednode_jobs)
+
 
 
 #批量修改分配主机
@@ -120,13 +134,14 @@ def allmodassignednodeJob(server,oldassignednode,newassignednode):
     #         logger.flow("%s 已经分配到 %s " % (jobname, newassignednode))
 
 if __name__ == '__main__':
-    server = jenkins.Jenkins('http://192.168.30.36:8080', username="ops.admin", password="Yunlsp123+456+")
+    server = jenkins.Jenkins('http://jenkins.hgj.net/', username="ops.admin", password="Yunlsp123+456+")
     #params = {'one': 'oriin/master', 'two': '192.168.30.36'}
     #showJobs(server)
     #showJobDetail('test')
-    #readJobConfig(server,'whale-user-demo17')
+    #readJobConfig(server,'python-wechat-helper')
+    showcontextJob("构建前")
     #mdassignednodeJob('whale-user-demo17','jenkins-k8s','jenkins-k8s2')
-    allmodassignednodeJob(server,'jenkins-k8s','jenkins-k8s2')
+    #allmodassignednodeJob(server,'jenkins-k8s','jenkins-k8s2')
 
     #createJob(server,'test')
     #delJob(server,'myjob')

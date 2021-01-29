@@ -1,0 +1,225 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>k8s 发布 python</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@1.5.13">
+      <gitLabConnection></gitLabConnection>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.31">
+      <autoRebuild>true</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>150</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>build_branch</name>
+          <description></description>
+          <defaultValue>master</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@2.2.1">
+          <name>build_type</name>
+          <description>dev          开发环境
+beta         测试环境
+uat           预发布环境
+prod         线上环境</description>
+          <randomName>choice-parameter-19794002923239</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.66">
+              <script>return [
+&quot;dev&quot;,
+&quot;beta&quot;,
+&quot;uat&quot;,
+&quot;prod&quot;
+]</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.66">
+              <script>return [&quot;error env&quot;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>python-wechat-helper</projectName>
+          <projectFullName>python-wechat-helper</projectFullName>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.ChoiceParameter>
+        <hudson.model.StringParameterDefinition>
+          <name>build_version</name>
+          <description>发布版本号</description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.2.1">
+          <name>resources</name>
+          <description>CPU/内存限制</description>
+          <randomName>choice-parameter-1810546280283641</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.66">
+              <script>dev=[&apos;{cpu_requests: &quot;100m&quot;, cpu_limit:&quot;4000m&quot;, memory_requests: &quot;512Mi&quot;, memory_limit: &quot;1024Mi&quot;}&apos;]
+beta=[&apos;{cpu_requests: &quot;100m&quot;, cpu_limit:&quot;4000m&quot;, memory_requests: &quot;512Mi&quot;, memory_limit: &quot;1024Mi&quot;}&apos;]
+uat=[&apos;{cpu_requests: &quot;100m&quot;, cpu_limit:&quot;1000m&quot;, memory_requests: &quot;512Mi&quot;, memory_limit: &quot;1024Mi&quot;}&apos;]
+prod=[&apos;{cpu_requests: &quot;100m&quot;, cpu_limit:&quot;2000m&quot;, memory_requests: &quot;512Mi&quot;, memory_limit: &quot;1024Mi&quot;}&apos;]
+
+
+switch(build_type) { 
+   case &quot;dev&quot;: return dev
+   case &quot;beta&quot;: return beta
+   case &quot;uat&quot; : return uat
+   case &quot;prod&quot;:  return prod
+   default: return [&quot;error&quot;]
+} 
+</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.66">
+              <script>return [&quot;error&quot;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>python-wechat-helper</projectName>
+          <projectFullName>python-wechat-helper</projectFullName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>build_type</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.2.1">
+          <name>replicas</name>
+          <description>发布的 Pod数量</description>
+          <randomName>choice-parameter-1810546283764534</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.66">
+              <script>dev=[1, 2]
+beta=[1, 2]
+uat=[2]
+prod=[2]
+
+
+switch(build_type) { 
+   case &quot;dev&quot;: return dev
+   case &quot;beta&quot;: return beta
+   case &quot;uat&quot; : return uat
+   case &quot;prod&quot;:  return prod
+   default: return [&quot;error&quot;]
+} 
+</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.66">
+              <script></script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>python-wechat-helper</projectName>
+          <projectFullName>python-wechat-helper</projectFullName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>build_type</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <hudson.model.BooleanParameterDefinition>
+          <name>out_details</name>
+          <description>是否输出详细信息</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>is_rebuild</name>
+          <description>是否重新构建</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.12.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>ssh://git@git.hgj.net:8022/machine-learning/wechat-helper.git</url>
+        <credentialsId>build</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${build_branch}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <assignedNode>jenkins-k8s</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command># 校验当前用户是否具备发布 $build_type 环境的权限
+res=`python3 /data/script/build_type_check.py $build_type $BUILD_USER_ID`
+if [ $res -eq &quot;-1&quot; ]; then
+  echo &quot;$BUILD_USER没有$build_type节点的权限&quot;;
+  exit -1
+fi</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>sh /data/kubernetes-yaml-script/git_build_check.sh
+
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>
+python3 /data/kubernetes-yaml-script/go_mvn_apply.py -server_env=$build_type -name=$JOB_BASE_NAME \
+	-file_path=kubernetes-cicd.yaml -build_version=$build_version -is_rebuild=$is_rebuild \
+	-env &apos;{SERVER_ENV:&apos;$build_type&apos;, BASE_DIR:&quot;&apos;&quot;/$JOB_BASE_NAME&quot;&apos;&quot;}&apos; \
+	-resources &quot;$resources&quot; \
+    -out_details=$out_details \
+    -replicas=$replicas
+       
+   
+
+
+    
+ </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.descriptionsetter.DescriptionSetterPublisher plugin="description-setter@1.10">
+      <regexp>^\[DESC\](.*),(.*),(.*)</regexp>
+      <regexpForFailed></regexpForFailed>
+      <description>&lt;div&gt;&lt;div style=&quot;float:right;&quot;&gt;\3&lt;/div&gt;\1&lt;div style=&quot;width: 280px;white-space&quot;&gt;\2&lt;/div&gt;&lt;/div&gt;</description>
+      <setForMatrix>false</setForMatrix>
+    </hudson.plugins.descriptionsetter.DescriptionSetterPublisher>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.37">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+      <disableDeferredWipeout>false</disableDeferredWipeout>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.10"/>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.6.2">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+    <org.jenkinsci.plugins.builduser.BuildUser plugin="build-user-vars-plugin@1.5"/>
+  </buildWrappers>
+</project>
